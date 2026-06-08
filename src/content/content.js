@@ -4,18 +4,18 @@
 export const SITE_URL = "http://192.168.29.180:5173"; // dynamically updated for local testing
 
 export const galleryPhotos = [
-  { id: 1, src: '/src/assets/photos/photo-01.jpg', caption: 'Unstoppable since day one ✨' },
-  { id: 2, src: '/src/assets/photos/photo-02.jpg', caption: 'Forever my favorite headache 🤍' },
-  { id: 3, src: '/src/assets/photos/photo-03.jpg', caption: 'Growing up but never growing old 🌸' },
-  { id: 4, src: '/src/assets/photos/photo-04.jpg', caption: 'Always stealing the spotlight 🌟' },
-  { id: 5, src: '/src/assets/photos/photo-05.jpg', caption: 'Partner in crime (mostly mine) 🕊️' },
-  { id: 6, src: '/src/assets/photos/photo-06.jpg', caption: 'The absolute coolest sister 🦋' },
-  { id: 7, src: '/src/assets/photos/photo-07.jpg', caption: 'Smiling through the chaos 💫' },
-  { id: 8, src: '/src/assets/photos/photo-08.jpg', caption: 'Too much attitude for one picture 👑' },
-  { id: 9, src: '/src/assets/photos/photo-09.jpg', caption: 'Making memories, taking names 📸' },
-  { id: 10, src: '/src/assets/photos/photo-10.jpg', caption: 'Pure gold heart 💛' },
-  { id: 11, src: '/src/assets/photos/photo-11.jpg', caption: 'Ready to conquer the world 🌍' },
-  { id: 12, src: '/src/assets/photos/photo-12.jpg', caption: 'To infinity and beyond 🚀' },
+  { id: 1, src: '/photos/photo-01.jpg', caption: 'Unstoppable since day one ✨' },
+  { id: 2, src: '/photos/photo-02.jpg', caption: 'Forever my favorite headache 🤍' },
+  { id: 3, src: '/photos/photo-03.jpg', caption: 'Growing up but never growing old 🌸' },
+  { id: 4, src: '/photos/photo-04.jpg', caption: 'Always stealing the spotlight 🌟' },
+  { id: 5, src: '/photos/photo-05.jpg', caption: 'Partner in crime (mostly mine) 🕊️' },
+  { id: 6, src: '/photos/photo-06.jpg', caption: 'The absolute coolest sister 🦋' },
+  { id: 7, src: '/photos/photo-07.jpg', caption: 'Smiling through the chaos 💫' },
+  { id: 8, src: '/photos/photo-08.jpg', caption: 'Too much attitude for one picture 👑' },
+  { id: 9, src: '/photos/photo-09.jpg', caption: 'Making memories, taking names 📸' },
+  { id: 10, src: '/photos/photo-10.jpg', caption: 'Pure gold heart 💛' },
+  { id: 11, src: '/photos/photo-11.jpg', caption: 'Ready to conquer the world 🌍' },
+  { id: 12, src: '/photos/photo-12.jpg', caption: 'To infinity and beyond 🚀' },
 ];
 
 export const letterContent = {
