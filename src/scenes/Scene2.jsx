@@ -115,16 +115,16 @@ export default function Scene2({ onComplete }) {
       className="scene-container flex flex-col items-center justify-center relative touch-manipulation"
       style={{ backgroundColor: 'transparent' }}
     >
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-[500px] h-[300px] rounded-full blur-[120px] opacity-10" 
-             style={{ background: 'radial-gradient(ellipse, var(--rose) 0%, transparent 70%)' }} />
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="w-[100vw] h-[100vw] md:w-[800px] md:h-[800px] rounded-full blur-[80px] opacity-60" 
+             style={{ background: 'radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 40%, transparent 70%)' }} />
       </div>
 
       <div className="relative z-10 flex flex-col items-center text-center px-6">
         <h1 
           ref={nameRef}
           className="font-display text-6xl md:text-8xl lg:text-9xl font-bold mb-10 flex overflow-hidden py-4 tracking-[-0.02em]"
-          style={{ textShadow: '0 10px 40px rgba(229, 196, 135, 0.2)' }}
+          style={{ textShadow: '0 4px 12px rgba(0, 0, 0, 0.4), 0 0 24px rgba(0, 0, 0, 0.3)' }}
         >
           {nameLetters.map((l, i) => (
             <span key={i} className="name-letter inline-block" style={{ color: letterColors[i] }}>{l}</span>
