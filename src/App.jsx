@@ -31,7 +31,7 @@ export default function App() {
   };
 
   return (
-    <div className="bg-noise w-full h-full absolute inset-0">
+    <div className="bg-noise w-full min-h-screen relative">
       <Balloons />
       {/* Render current scene in the correct order: Entry -> Intro -> Photos -> More Photos -> Letter -> Finale */}
       {currentScene === 0 && <Scene1 onComplete={advanceScene} startMusic={startMusic} />}
