@@ -37,6 +37,14 @@ export default function Scene6() {
       { opacity: 0 },
       { opacity: 0.7, duration: 1, delay: 1.2 }
     );
+
+    // Auto blow out candle after 4 seconds
+    const timer = setTimeout(() => {
+      setCandleOut(true);
+      confetti({ particleCount: 200, spread: 120, origin: { y: 0.5 }, zIndex: 9999 });
+    }, 4000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const handleTwoClick = () => {
@@ -89,18 +97,12 @@ export default function Scene6() {
           June 27, 2026
         </p>
 
-        {/* Make a Wish Candle */}
-        <div className="mt-2 flex flex-col items-center gap-3 cursor-pointer z-30" onClick={() => {
-          if (!candleOut) {
-            setCandleOut(true);
-            confetti({ particleCount: 200, spread: 120, origin: { y: 0.5 }, zIndex: 9999 });
-          }
-        }}>
+        <div className="mt-2 flex flex-col items-center gap-3 z-30">
           <div className="text-5xl transition-all duration-500 hover:scale-110 active:scale-95">
             {candleOut ? '🎂' : '🕯️'}
           </div>
           <p className="font-script text-lg text-[var(--cream)]/50 transition-opacity">
-            {candleOut ? 'Wish made! 🌟' : 'Click to make a wish'}
+            {candleOut ? 'Wish made! 🌟' : 'Making a wish...'}
           </p>
         </div>
 

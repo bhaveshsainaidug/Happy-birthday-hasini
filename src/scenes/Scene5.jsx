@@ -82,7 +82,6 @@ export default function Scene5({ onComplete, device }) {
       ref={containerRef}
       className="scene-container bg-transparent flex flex-col items-center justify-center relative overflow-hidden touch-manipulation"
       style={{ perspective: "1000px" }}
-      onClick={handleAdvance}
     >
       <div className="absolute top-8 md:top-12 left-0 right-0 z-20 text-center pointer-events-none">
         <h2 className="font-script text-4xl md:text-5xl text-[var(--gold)] drop-shadow-lg scene5-title">
