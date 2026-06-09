@@ -108,7 +108,7 @@ export default function Scene1({ onComplete, startMusic }) {
       ref={containerRef}
       onClick={handleAdvance}
       className="scene-container flex flex-col items-center justify-center cursor-pointer touch-manipulation"
-      style={{ backgroundColor: 'var(--charcoal)' }}
+      style={{ backgroundColor: 'transparent' }}
     >
       <style>{`
         @keyframes breathe {

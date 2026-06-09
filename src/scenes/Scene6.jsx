@@ -53,9 +53,7 @@ export default function Scene6() {
   };
 
   return (
-    <div ref={containerRef} className="scene-container flex flex-col items-center justify-center relative overflow-hidden bg-black">
-      {/* Slow looping CSS gradient background */}
-      <div className="absolute inset-0 z-0 bg-black"></div>
+    <div ref={containerRef} className="scene-container flex flex-col items-center justify-center relative overflow-hidden bg-transparent">
 
       <style>{`
         @keyframes shimmer {

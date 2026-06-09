@@ -8,6 +8,7 @@ import Scene4 from './scenes/Scene4';
 import Scene5 from './scenes/Scene5';
 import Scene6 from './scenes/Scene6';
 import Balloons from './components/Balloons';
+import AuroraBackground from './components/AuroraBackground';
 
 export default function App() {
   const [currentScene, setCurrentScene] = useState(0);
@@ -32,6 +33,7 @@ export default function App() {
 
   return (
     <div className="bg-noise w-full min-h-screen relative">
+      <AuroraBackground />
       <Balloons />
       {/* Render current scene in the correct order: Entry -> Intro -> Photos -> More Photos -> Letter -> Finale */}
       {currentScene === 0 && <Scene1 onComplete={advanceScene} startMusic={startMusic} />}

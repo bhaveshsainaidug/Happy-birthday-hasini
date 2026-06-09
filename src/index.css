@@ -101,4 +101,23 @@
     height: 100svh;
     overflow: hidden;
   }
+
+  @keyframes aurora-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(10vw, 15vh) scale(1.1); }
+    66% { transform: translate(-10vw, 5vh) scale(0.9); }
+  }
+  @keyframes aurora-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-15vw, -10vh) scale(1.2); }
+    66% { transform: translate(5vw, -20vh) scale(0.8); }
+  }
+  @keyframes aurora-3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(15vw, -15vh) scale(0.9); }
+    66% { transform: translate(-5vw, 10vh) scale(1.3); }
+  }
+  .animate-aurora-1 { animation: aurora-1 20s ease-in-out infinite alternate; }
+  .animate-aurora-2 { animation: aurora-2 25s ease-in-out infinite alternate-reverse; }
+  .animate-aurora-3 { animation: aurora-3 30s ease-in-out infinite alternate; }
 }

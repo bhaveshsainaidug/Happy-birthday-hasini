@@ -67,7 +67,7 @@ export default function Scene4({ onComplete }) {
     <div 
       ref={containerRef}
       className="scene-container overflow-hidden text-[var(--cream)] touch-manipulation"
-      style={{ backgroundColor: '#0f0d0b' }}
+      style={{ backgroundColor: 'transparent' }}
       onClick={handleAdvance}
     >
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
