@@ -84,6 +84,12 @@ export default function Scene6() {
         }
       `}</style>
 
+      {/* Dark vignette behind text for legibility */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="absolute w-[100vw] h-[100vw] md:w-[800px] md:h-[800px] rounded-full blur-[80px] opacity-60" 
+             style={{ background: 'radial-gradient(circle, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)' }} />
+      </div>
+
       <div className="relative z-10 flex flex-col items-center text-center px-4">
         
         <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-4 flex flex-col items-center justify-center gap-y-2">

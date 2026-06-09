@@ -69,11 +69,16 @@ export default function Scene4({ onComplete }) {
       className="scene-container overflow-hidden text-[var(--cream)] touch-manipulation"
       style={{ backgroundColor: 'transparent' }}
     >
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 z-0">
         <div className="w-[600px] h-[400px] rounded-full blur-[150px]" style={{ backgroundColor: 'var(--rose)' }} />
       </div>
 
-      <div className="w-full h-full max-w-3xl mx-auto px-4 py-8 md:py-12 flex flex-col justify-center relative">
+      {/* Dark vignette overlay for text legibility */}
+      <div className="absolute inset-0 z-0 pointer-events-none bg-black/40 md:bg-transparent">
+        <div className="hidden md:block absolute inset-0 opacity-70" style={{ background: 'radial-gradient(circle at center, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%)' }} />
+      </div>
+
+      <div className="w-full h-full max-w-3xl mx-auto px-4 py-8 md:py-12 flex flex-col justify-center relative z-10">
         <div ref={textContainerRef} className="w-full">
           
           <div className="flex items-center gap-4 mb-6 opacity-0 letter-word">
