@@ -86,7 +86,7 @@ export default function Scene5({ onComplete, device }) {
     >
       <div className="absolute top-8 md:top-12 left-0 right-0 z-20 text-center pointer-events-none">
         <h2 className="font-script text-4xl md:text-5xl text-[var(--gold)] drop-shadow-lg scene5-title">
-          A few more memories...
+          Memories ✨
         </h2>
       </div>
 
