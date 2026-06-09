@@ -11,63 +11,7 @@ export default function Scene1({ onComplete, startMusic }) {
   useEffect(() => {
     // GSAP Entrance
     gsap.fromTo('.tap-prompt', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.5, delay: 0.8, ease: "power2.out" });
-
-    // Fireflies canvas
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    let animationFrameId;
-    let particles = [];
-    
-    const numParticles = device.isMobile ? 40 : 80;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener('resize', resize);
-    resize();
-
-    for (let i = 0; i < numParticles; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 2 + 0.5,
-        dx: (Math.random() - 0.5) * 0.5,
-        dy: (Math.random() - 1) * 1.5 - 0.5,
-        alpha: Math.random(),
-        da: (Math.random() - 0.5) * 0.02
-      });
-    }
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => {
-        ctx.beginPath();
-        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3);
-        gradient.addColorStop(0, `rgba(212, 168, 67, ${p.alpha})`);
-        gradient.addColorStop(1, `rgba(212, 168, 67, 0)`);
-        ctx.fillStyle = gradient;
-        ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
-        ctx.fill();
-        
-        p.x += p.dx;
-        p.y += p.dy;
-        p.alpha += p.da;
-
-        if (p.alpha <= 0 || p.alpha >= 1) p.da = -p.da;
-        if (p.y < -10) p.y = canvas.height + 10;
-        if (p.x < -10) p.x = canvas.width + 10;
-        if (p.x > canvas.width + 10) p.x = -10;
-      });
-      animationFrameId = requestAnimationFrame(draw);
-    };
-    draw();
-
-    return () => {
-      window.removeEventListener('resize', resize);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [device.isMobile]);
+  }, []);
 
   const handleAdvance = () => {
     if (isTransitioning) return;
@@ -116,11 +60,6 @@ export default function Scene1({ onComplete, startMusic }) {
           50% { transform: scale(1.08); opacity: 0.25; }
         }
       `}</style>
-      <canvas 
-        ref={canvasRef} 
-        className="absolute inset-0 z-0 pointer-events-none"
-        style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-      />
       
       {/* Cinematic multi-layered glow at center */}
       <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">

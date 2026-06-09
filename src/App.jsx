@@ -8,6 +8,7 @@ import Scene5 from './scenes/Scene5';
 import Scene6 from './scenes/Scene6';
 import Balloons from './components/Balloons';
 import AuroraBackground from './components/AuroraBackground';
+import ParticleEffect from './components/ParticleEffect';
 
 export default function App() {
   const [currentScene, setCurrentScene] = useState(0);
@@ -33,6 +34,7 @@ export default function App() {
   return (
     <div className="bg-noise w-full min-h-screen relative">
       <AuroraBackground />
+      <ParticleEffect mode={currentScene === 0 ? 'dots' : 'hearts'} />
       <Balloons />
       {/* Render current scene in the correct order: Entry -> Intro -> Photos -> Letter -> Finale */}
       {currentScene === 0 && <Scene1 onComplete={advanceScene} startMusic={startMusic} />}
