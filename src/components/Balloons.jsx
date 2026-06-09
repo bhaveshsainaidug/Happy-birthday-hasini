@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 export default function Balloons() {
-  const balloons = Array.from({ length: 15 }); // Optimized count
+  const balloonData = useMemo(() => Array.from({ length: 15 }, (_, i) => ({
+    id: i,
+    size: 30 + Math.random() * 40,
+    left: Math.random() * 100,
+    delay: Math.random() * 15,
+    duration: 12 + Math.random() * 15,
+    color: ['#D4A843', '#E8A598', '#9BAF88', '#F5ECD7'][Math.floor(Math.random() * 4)]
+  })), []);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
@@ -46,29 +53,21 @@ export default function Balloons() {
         }
       `}</style>
       
-      {balloons.map((_, i) => {
-        const size = 30 + Math.random() * 40;
-        const left = Math.random() * 100;
-        const delay = Math.random() * 15;
-        const duration = 12 + Math.random() * 15;
-        const color = ['#D4A843', '#E8A598', '#9BAF88', '#F5ECD7'][Math.floor(Math.random() * 4)];
-        
-        return (
-          <div 
-            key={i} 
-            className="global-balloon"
-            style={{
-              width: size + 'px',
-              height: (size * 1.25) + 'px',
-              left: left + '%',
-              backgroundColor: color,
-              color: color,
-              animationDelay: delay + 's',
-              animationDuration: duration + 's'
-            }}
-          ></div>
-        );
-      })}
+      {balloonData.map((b) => (
+        <div 
+          key={b.id} 
+          className="global-balloon"
+          style={{
+            width: b.size + 'px',
+            height: (b.size * 1.25) + 'px',
+            left: b.left + '%',
+            backgroundColor: b.color,
+            color: b.color,
+            animationDelay: b.delay + 's',
+            animationDuration: b.duration + 's'
+          }}
+        ></div>
+      ))}
     </div>
   );
 }

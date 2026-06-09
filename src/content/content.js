@@ -1,7 +1,7 @@
 // Centralized content file
 // All personal text, milestones, and captions live here.
 
-export const SITE_URL = "http://192.168.29.180:5173"; // dynamically updated for local testing
+export const SITE_URL = typeof window !== 'undefined' ? window.location.origin : '';
 
 export const galleryPhotos = [
   { id: 1, src: '/photos/photo-01.jpg', caption: 'Unstoppable since day one ✨' },

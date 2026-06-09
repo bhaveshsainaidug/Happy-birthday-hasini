@@ -9,6 +9,9 @@ export default function Scene1({ onComplete, startMusic }) {
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
+    // GSAP Entrance
+    gsap.fromTo('.tap-prompt', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1.5, delay: 0.8, ease: "power2.out" });
+
     // Fireflies canvas
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -40,8 +43,11 @@ export default function Scene1({ onComplete, startMusic }) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach(p => {
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(212, 168, 67, ${p.alpha})`; // --gold
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 3);
+        gradient.addColorStop(0, `rgba(212, 168, 67, ${p.alpha})`);
+        gradient.addColorStop(1, `rgba(212, 168, 67, 0)`);
+        ctx.fillStyle = gradient;
+        ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
         ctx.fill();
         
         p.x += p.dx;
@@ -97,29 +103,41 @@ export default function Scene1({ onComplete, startMusic }) {
     });
   };
 
-
   return (
     <div 
       ref={containerRef}
       onClick={handleAdvance}
-      className="scene-container flex flex-col items-center justify-center cursor-pointer"
+      className="scene-container flex flex-col items-center justify-center cursor-pointer touch-manipulation"
       style={{ backgroundColor: 'var(--charcoal)' }}
     >
+      <style>{`
+        @keyframes breathe {
+          0%, 100% { transform: scale(1); opacity: 0.15; }
+          50% { transform: scale(1.08); opacity: 0.25; }
+        }
+      `}</style>
       <canvas 
         ref={canvasRef} 
         className="absolute inset-0 z-0 pointer-events-none"
         style={{ willChange: 'transform', transform: 'translateZ(0)' }}
       />
       
-      {/* Soft pulsing glow at center */}
+      {/* Cinematic multi-layered glow at center */}
       <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-        <div className="w-[300px] h-[300px] rounded-full blur-[100px] opacity-20" style={{ backgroundColor: 'var(--gold)' }} />
+        <div className="w-[400px] h-[400px] rounded-full blur-[120px] opacity-15 animate-[breathe_6s_ease-in-out_infinite]" style={{ background: 'radial-gradient(circle, var(--gold) 0%, transparent 70%)' }} />
+        <div className="absolute w-[200px] h-[200px] rounded-full blur-[60px] opacity-20" style={{ background: 'var(--cream)' }} />
       </div>
 
-      <div className="relative z-10 flex flex-col items-center">
-        <div className="flex flex-col items-center animate-pulse">
-          <p className="font-script text-3xl md:text-4xl text-[var(--gold)] mb-6 drop-shadow-md">
-            Tap anywhere to begin
+      <div className="relative z-10 flex flex-col items-center tap-prompt">
+        <h1 className="font-display text-5xl md:text-6xl text-[var(--cream)] mb-4 tracking-widest opacity-90">
+          For Hasini
+        </h1>
+        <p className="font-script text-lg text-[var(--gold)]/60 mb-12 tracking-[0.3em] uppercase">
+          June 27, 2026
+        </p>
+        <div className="flex flex-col items-center">
+          <p className="font-body text-xs md:text-sm text-[var(--gold)] mb-6 tracking-[0.4em] uppercase font-semibold opacity-70 animate-[pulse_3s_ease-in-out_infinite]">
+            Tap Anywhere To Begin
           </p>
         </div>
       </div>

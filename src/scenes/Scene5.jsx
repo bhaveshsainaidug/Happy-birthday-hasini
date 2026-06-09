@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { galleryPhotos } from '../content/content';
 
-export default function Scene5({ onComplete }) {
+export default function Scene5({ onComplete, device }) {
   const containerRef = useRef(null);
   const slidesRef = useRef([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -13,6 +13,12 @@ export default function Scene5({ onComplete }) {
     gsap.fromTo(containerRef.current, 
       { opacity: 0, scale: 1.1 }, 
       { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" }
+    );
+
+    // Animate title in
+    gsap.fromTo('.scene5-title', 
+      { y: -30, opacity: 0 }, 
+      { y: 0, opacity: 1, duration: 1, ease: "power2.out", delay: 0.3 }
     );
   }, []);
 
@@ -59,7 +65,7 @@ export default function Scene5({ onComplete }) {
     });
     document.body.appendChild(flash);
 
-    gsap.to(containerRef.current, { scale: 1.5, filter: "blur(10px)", duration: 1, ease: "power2.in" });
+    gsap.to(containerRef.current, { scale: 1.15, filter: "blur(10px)", duration: 1, ease: "power2.in" });
     gsap.to(flash, {
       opacity: 1, duration: 1, ease: "power2.inOut",
       onComplete: () => {
@@ -74,11 +80,11 @@ export default function Scene5({ onComplete }) {
   return (
     <div 
       ref={containerRef}
-      className="scene-container bg-[var(--charcoal)] flex flex-col items-center justify-center relative overflow-hidden"
+      className="scene-container bg-[var(--charcoal)] flex flex-col items-center justify-center relative overflow-hidden touch-manipulation"
       style={{ perspective: "1000px" }}
     >
       <div className="absolute top-8 md:top-12 left-0 right-0 z-20 text-center pointer-events-none">
-        <h2 className="font-script text-4xl md:text-5xl text-[var(--gold)] drop-shadow-lg">
+        <h2 className="font-script text-4xl md:text-5xl text-[var(--gold)] drop-shadow-lg scene5-title">
           A few more memories...
         </h2>
       </div>
@@ -91,7 +97,7 @@ export default function Scene5({ onComplete }) {
             className="absolute inset-0 flex flex-col items-center justify-center p-6 opacity-0"
             style={{ transformStyle: "preserve-3d" }}
           >
-            <div className="relative rounded-xl overflow-hidden shadow-2xl border-4 border-white/10 w-[80vw] max-w-[40vh] aspect-[3/4] flex-shrink-0">
+            <div className="relative rounded-xl overflow-hidden shadow-2xl border-4 border-white/10 w-[60vw] max-w-[60vw] md:max-w-[40vh] aspect-[3/4] flex-shrink-0">
               <img 
                 src={photo.src} 
                 alt="Memory" 
@@ -108,6 +114,12 @@ export default function Scene5({ onComplete }) {
         ))}
       </div>
 
+      {/* Slide counter dots */}
+      <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-2 z-20">
+        {galleryPhotos.map((_, i) => (
+          <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === currentIndex ? 'bg-[var(--gold)] scale-125' : 'bg-white/30'}`} />
+        ))}
+      </div>
 
     </div>
   );

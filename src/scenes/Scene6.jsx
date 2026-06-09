@@ -1,28 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import confetti from 'canvas-confetti';
-import { SITE_URL } from '../content/content';
+import gsap from 'gsap';
 
 export default function Scene6() {
-  const [toastVisible, setToastVisible] = useState(false);
   const [easterEggClicks, setEasterEggClicks] = useState(0);
   const [easterEggVisible, setEasterEggVisible] = useState(false);
+  const [candleOut, setCandleOut] = useState(false);
+  
+  const containerRef = useRef(null);
+  const title1Ref = useRef(null);
+  const title2Ref = useRef(null);
+  const dateRef = useRef(null);
 
   useEffect(() => {
-    // Confetti burst on mount
+    // GSAP Cinematic Entrance
     const colors = ['#D4A843', '#E8A598', '#F5ECD7', '#9BAF88'];
     
-    setTimeout(() => {
-      confetti({
-        particleCount: 180,
-        spread: 100,
-        origin: { y: 0.6 },
-        colors: colors,
-        disableForReducedMotion: true
-      });
-    }, 500); // slight delay for impact
-  }, []);
+    gsap.fromTo([title1Ref.current, title2Ref.current], 
+      { y: 40, opacity: 0, scale: 0.9 },
+      { y: 0, opacity: 1, scale: 1, duration: 1.2, ease: "back.out(1.4)", delay: 0.3, stagger: 0.2,
+        onStart: () => {
+          setTimeout(() => {
+            confetti({
+              particleCount: 180,
+              spread: 100,
+              origin: { y: 0.6 },
+              colors: colors,
+              disableForReducedMotion: true
+            });
+          }, 800);
+        }
+      }
+    );
 
-  const balloons = Array.from({ length: 15 });
+    gsap.fromTo(dateRef.current,
+      { opacity: 0 },
+      { opacity: 0.7, duration: 1, delay: 1.2 }
+    );
+  }, []);
 
   const handleTwoClick = () => {
     const newCount = easterEggClicks + 1;
@@ -38,24 +53,11 @@ export default function Scene6() {
   };
 
   return (
-    <div className="scene-container flex flex-col items-center justify-center relative overflow-hidden">
+    <div ref={containerRef} className="scene-container flex flex-col items-center justify-center relative overflow-hidden bg-black">
       {/* Slow looping CSS gradient background */}
-      <div 
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundColor: '#000000'
-        }}
-      ></div>
+      <div className="absolute inset-0 z-0 bg-black"></div>
 
       <style>{`
-        @keyframes gradient-cycle {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-gradient-cycle {
-          animation: gradient-cycle 15s ease infinite;
-        }
         @keyframes shimmer {
           0% { background-position: -200% center; }
           100% { background-position: 200% center; }
@@ -63,10 +65,10 @@ export default function Scene6() {
         .text-shimmer {
           background: linear-gradient(
             to right,
-            var(--charcoal) 20%,
+            var(--cream) 20%,
             var(--gold) 40%,
-            var(--gold) 60%,
-            var(--charcoal) 80%
+            #fff8e7 60%,
+            var(--cream) 80%
           );
           background-size: 200% auto;
           color: transparent;
@@ -74,96 +76,54 @@ export default function Scene6() {
           background-clip: text;
           animation: shimmer 4s linear infinite;
         }
-        @keyframes float-balloon {
-          0% { transform: translateY(100vh) translateX(0) scale(1); opacity: 1; }
-          50% { transform: translateY(0vh) translateX(20px) scale(1.05); }
-          100% { transform: translateY(-120vh) translateX(-20px) scale(1); opacity: 0; }
-        }
-        .balloon {
-          position: absolute;
-          bottom: -100px;
-          width: 40px;
-          height: 50px;
-          border-radius: 50%;
-          animation: float-balloon 12s ease-in-out infinite;
-        }
-        .balloon::before {
-          content: '';
-          position: absolute;
-          bottom: -8px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 0;
-          height: 0;
-          border-left: 5px solid transparent;
-          border-right: 5px solid transparent;
-          border-bottom: 8px solid currentColor;
-        }
-        .balloon::after {
-          content: '';
-          position: absolute;
-          bottom: -40px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 1px;
-          height: 40px;
-          background: rgba(255,255,255,0.4);
-        }
       `}</style>
-
-      {/* Balloons layer */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        {balloons.map((_, i) => {
-          const size = 30 + Math.random() * 40;
-          const left = Math.random() * 100;
-          const delay = Math.random() * 10;
-          const duration = 10 + Math.random() * 10;
-          const color = ['#D4A843', '#E8A598', '#9BAF88'][Math.floor(Math.random() * 3)];
-          
-          return (
-            <div 
-              key={i} 
-              className="balloon opacity-80"
-              style={{
-                width: size + 'px',
-                height: (size * 1.25) + 'px',
-                left: left + '%',
-                backgroundColor: color,
-                color: color,
-                animationDelay: delay + 's',
-                animationDuration: duration + 's'
-              }}
-            ></div>
-          );
-        })}
-      </div>
 
       <div className="relative z-10 flex flex-col items-center text-center px-4">
         
-        <h1 className="font-display text-5xl md:text-7xl font-bold mb-4 flex flex-col items-center justify-center gap-y-2">
-          <span className="text-shimmer drop-shadow-sm">
+        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-4 flex flex-col items-center justify-center gap-y-2">
+          <span ref={title1Ref} className="text-shimmer drop-shadow-lg scene6-title">
             Happy <span onClick={handleTwoClick} className="cursor-pointer">B</span>irthday,
           </span>
-          <span className="text-shimmer drop-shadow-sm">Hasini! 🎂</span>
+          <span ref={title2Ref} className="text-shimmer drop-shadow-lg scene6-title">Hasini! 🎂</span>
         </h1>
         
-        <p className="font-display text-2xl md:text-3xl text-[var(--charcoal)] opacity-80 mb-12">
+        <p ref={dateRef} className="font-display text-2xl md:text-3xl text-[var(--cream)] opacity-70 mb-12 scene6-date">
           June 27, 2026
         </p>
 
-        {/* Secret Easter Egg Message */}
-        <div 
-          className={`absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md pointer-events-none transition-opacity duration-1000 ${easterEggVisible ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <p className="font-script text-3xl md:text-4xl text-[var(--charcoal)] rotate-[-4deg] bg-[var(--cream)]/80 backdrop-blur p-6 rounded-lg shadow-xl border border-[var(--gold)]/30">
-            I'll always be here for you.
+        {/* Make a Wish Candle */}
+        <div className="mt-2 flex flex-col items-center gap-3 cursor-pointer z-30" onClick={() => {
+          if (!candleOut) {
+            setCandleOut(true);
+            confetti({ particleCount: 200, spread: 120, origin: { y: 0.5 }, zIndex: 9999 });
+          }
+        }}>
+          <div className="text-5xl transition-all duration-500 hover:scale-110 active:scale-95">
+            {candleOut ? '🎂' : '🕯️'}
+          </div>
+          <p className="font-script text-lg text-[var(--cream)]/50 transition-opacity">
+            {candleOut ? 'Wish made! 🌟' : 'Click to make a wish'}
           </p>
         </div>
 
+        {/* Final Message Card */}
+        {candleOut && (
+          <div className="mt-8 max-w-sm mx-auto bg-white/5 border border-[var(--gold)]/20 rounded-xl p-6 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <p className="font-script text-xl text-[var(--cream)]/80 text-center leading-relaxed">
+              "Twenty years down, a whole lifetime of adventures ahead. 
+              We'll be cheering you on every step of the way. 🤍"
+            </p>
+          </div>
+        )}
 
-
-
-
+        {/* Secret Easter Egg Message */}
+        <div 
+          className={`absolute top-[20%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md pointer-events-none transition-opacity duration-1000 ${easterEggVisible ? 'opacity-100 z-50' : 'opacity-0 -z-10'}`}
+        >
+          <p className="font-script text-3xl md:text-4xl text-[#1a1a1a] rotate-[-4deg] bg-[var(--cream)]/90 backdrop-blur p-6 rounded-lg shadow-2xl border border-[var(--gold)]/50">
+            I'll always be here for you.
+          </p>
+        </div>
       </div>
     </div>
   );
