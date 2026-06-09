@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 
 export default function Balloons() {
-  const balloonData = useMemo(() => Array.from({ length: 15 }, (_, i) => ({
+  const balloonData = useMemo(() => Array.from({ length: 25 }, (_, i) => ({
     id: i,
     size: 30 + Math.random() * 40,
     left: Math.random() * 100,
-    delay: Math.random() * 15,
-    duration: 12 + Math.random() * 15,
+    delay: Math.random() * 8, // reduced delay to start popping up quicker
+    duration: 6 + Math.random() * 8, // reduced duration so they float faster
     color: ['#D4A843', '#E8A598', '#9BAF88', '#F5ECD7'][Math.floor(Math.random() * 4)]
   })), []);
 
