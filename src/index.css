@@ -8,7 +8,7 @@
   --color-sage: #9BAF88;
   
   --font-display: "Playfair Display", serif;
-  --font-body: "Dancing Script", cursive;
+  --font-body: "DM Sans", sans-serif;
   --font-script: "Dancing Script", cursive;
 }
 
@@ -28,7 +28,7 @@
     min-height: 100vh;
     background-color: var(--charcoal);
     color: var(--cream);
-    font-family: "Dancing Script", cursive;
+    font-family: "DM Sans", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     selection-background-color: rgba(229, 196, 135, 0.3);
@@ -45,13 +45,13 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Dancing Script", cursive;
+    font-family: "Playfair Display", serif;
   }
 }
 
 @layer utilities {
-  .font-display { font-family: "Dancing Script", cursive; }
-  .font-body { font-family: "Dancing Script", cursive; }
+  .font-display { font-family: "Playfair Display", serif; }
+  .font-body { font-family: "DM Sans", sans-serif; }
   .font-script { font-family: "Dancing Script", cursive; }
 
   /* Premium Noise Texture */
