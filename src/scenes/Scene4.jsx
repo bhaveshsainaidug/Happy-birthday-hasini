@@ -10,6 +10,11 @@ export default function Scene4({ onComplete, audioAnalyser }) {
   const heartRef = useRef(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showButton, setShowButton] = useState(false);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   // Audio-reactive state
   const [glowIntensity, setGlowIntensity] = useState(1);
@@ -18,20 +23,20 @@ export default function Scene4({ onComplete, audioAnalyser }) {
     // Reveal card first
     gsap.fromTo(cardRef.current,
       { y: 50, opacity: 0, scale: 0.95, rotateX: 10 },
-      { y: 0, opacity: 1, scale: 1, rotateX: 0, duration: 1.2, ease: "power3.out" }
+      { y: 0, opacity: 1, scale: 1, rotateX: 0, duration: 1.5, ease: "power3.out" }
     );
 
     // Text reveal animation: word by word
     const words = textContainerRef.current.querySelectorAll('.letter-word');
     gsap.set(words, { y: 12, opacity: 0 });
     
-    const tl = gsap.timeline({ delay: 0.6 });
+    const tl = gsap.timeline({ delay: 0.8 });
 
     tl.to(words, {
       y: 0,
       opacity: 1,
-      duration: 0.6,
-      stagger: 0.12, 
+      duration: 0.75,
+      stagger: 0.18, 
       ease: "power2.out"
     });
 
@@ -39,7 +44,7 @@ export default function Scene4({ onComplete, audioAnalyser }) {
     gsap.set(heartRef.current, { strokeDasharray: 100, strokeDashoffset: 100 });
     tl.to(heartRef.current, {
       strokeDashoffset: 0,
-      duration: 1,
+      duration: 1.2,
       ease: "power1.inOut",
       onComplete: () => {
         setShowButton(true);
@@ -72,12 +77,11 @@ export default function Scene4({ onComplete, audioAnalyser }) {
     return () => { active = false; };
   }, [audioAnalyser]);
 
-  // Autoplay transition
   useEffect(() => {
     if (showButton) {
       const timer = setTimeout(() => {
         handleAdvance();
-      }, 6500); // 6.5 seconds to read letter signoff, then auto-advances
+      }, 9500); // 9.5 seconds to read letter signoff, then auto-advances
       return () => clearTimeout(timer);
     }
   }, [showButton]);
@@ -134,7 +138,7 @@ export default function Scene4({ onComplete, audioAnalyser }) {
     tl.to(cardRef.current, {
       rotateY: -45,
       scaleY: 0.9,
-      duration: 0.6,
+      duration: 0.8,
       ease: "power2.inOut"
     });
 
@@ -143,11 +147,11 @@ export default function Scene4({ onComplete, audioAnalyser }) {
       rotationY: -90,
       x: "-120%",
       opacity: 0,
-      duration: 0.9,
+      duration: 1.1,
       ease: "power3.in",
       force3D: true,
       onComplete: () => {
-        onComplete();
+        onCompleteRef.current();
       }
     }, "-=0.2");
   };

@@ -11,14 +11,14 @@ export default function Balloons() {
   })), []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
+    <div className="absolute inset-0 pointer-events-none z-40 overflow-hidden">
       <style>{`
         @keyframes float-balloon-global {
-          0% { transform: translateY(100vh) translateX(0) scale(1); opacity: 0; }
+          0% { transform: translate(0, 100vh) scale(1); opacity: 0; }
           10% { opacity: 0.6; }
-          50% { transform: translateY(0vh) translateX(20px) scale(1.05); }
+          50% { transform: translate(20px, 0vh) scale(1.05); }
           90% { opacity: 0.6; }
-          100% { transform: translateY(-120vh) translateX(-20px) scale(1); opacity: 0; }
+          100% { transform: translate(-20px, -120vh) scale(1); opacity: 0; }
         }
         .global-balloon {
           position: absolute;

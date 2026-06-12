@@ -18,18 +18,24 @@ export default function ParticleEffect({ mode, audioAnalyser }) {
       : (device.isMobile ? 50 : 100);
 
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      const width = canvas.parentElement ? canvas.parentElement.clientWidth : window.innerWidth;
+      const height = canvas.parentElement ? canvas.parentElement.clientHeight : window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
     };
     window.addEventListener('resize', resize);
     resize();
 
     // Initialize particles with Z-depth
+    const initialWidth = canvas.parentElement ? canvas.parentElement.clientWidth : window.innerWidth;
+    const initialHeight = canvas.parentElement ? canvas.parentElement.clientHeight : window.innerHeight;
     for (let i = 0; i < numParticles; i++) {
       const z = Math.random() * 3 + 0.5;
       particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+        x: Math.random() * initialWidth,
+        y: Math.random() * initialHeight,
         z: z,
         r: mode === 'hearts' ? Math.random() * 6 + 4 : Math.random() * 1.5 + 0.5,
         dx: (Math.random() - 0.5) * 0.4,
@@ -39,6 +45,32 @@ export default function ParticleEffect({ mode, audioAnalyser }) {
         color: ['#D4A843', '#E8A598', '#F5ECD7', '#FFB3C6'][Math.floor(Math.random() * 4)]
       });
     }
+
+    // Pre-render glow dot sprites for 60 FPS performance on low-end hardware
+    const colors = ['#D4A843', '#E8A598', '#F5ECD7', '#FFB3C6'];
+    const spriteSize = 64;
+    const sprites = {};
+
+    colors.forEach(color => {
+      const offscreen = document.createElement('canvas');
+      offscreen.width = spriteSize;
+      offscreen.height = spriteSize;
+      const oCtx = offscreen.getContext('2d');
+      
+      const grad = oCtx.createRadialGradient(
+        spriteSize / 2, spriteSize / 2, 0,
+        spriteSize / 2, spriteSize / 2, spriteSize / 2
+      );
+      grad.addColorStop(0, color);
+      grad.addColorStop(1, 'transparent');
+      
+      oCtx.fillStyle = grad;
+      oCtx.beginPath();
+      oCtx.arc(spriteSize / 2, spriteSize / 2, spriteSize / 2, 0, Math.PI * 2);
+      oCtx.fill();
+      
+      sprites[color] = offscreen;
+    });
 
     const drawHeart = (ctx, x, y, size, alpha, color) => {
       ctx.save();
@@ -87,16 +119,19 @@ export default function ParticleEffect({ mode, audioAnalyser }) {
         if (mode === 'hearts') {
           drawHeart(ctx, p.x, p.y, size, p.alpha, p.color);
         } else {
-          ctx.beginPath();
-          const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 2.5);
-          gradient.addColorStop(0, p.color);
-          gradient.addColorStop(1, 'transparent');
-          ctx.save();
-          ctx.globalAlpha = p.alpha;
-          ctx.fillStyle = gradient;
-          ctx.arc(p.x, p.y, size * 2.5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
+          const sprite = sprites[p.color];
+          if (sprite) {
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.drawImage(
+              sprite,
+              p.x - size * 2.5,
+              p.y - size * 2.5,
+              size * 5,
+              size * 5
+            );
+            ctx.restore();
+          }
         }
         
         // Update positions with audio-reactive speed scale
@@ -106,8 +141,10 @@ export default function ParticleEffect({ mode, audioAnalyser }) {
 
         // Reset particles smoothly
         if (p.alpha <= 0) {
-          p.y = canvas.height + 20;
-          p.x = Math.random() * canvas.width;
+          const currentHeight = canvas.parentElement ? canvas.parentElement.clientHeight : window.innerHeight;
+          const currentWidth = canvas.parentElement ? canvas.parentElement.clientWidth : window.innerWidth;
+          p.y = currentHeight + 20;
+          p.x = Math.random() * currentWidth;
           p.alpha = 0;
           p.da = Math.abs(p.da);
         } else if (p.alpha >= 0.8) {
@@ -115,8 +152,10 @@ export default function ParticleEffect({ mode, audioAnalyser }) {
         }
 
         if (p.y < -30) {
-          p.y = canvas.height + 20;
-          p.x = Math.random() * canvas.width;
+          const currentHeight = canvas.parentElement ? canvas.parentElement.clientHeight : window.innerHeight;
+          const currentWidth = canvas.parentElement ? canvas.parentElement.clientWidth : window.innerWidth;
+          p.y = currentHeight + 20;
+          p.x = Math.random() * currentWidth;
           p.alpha = 0.1;
           p.da = Math.abs(p.da);
         }
@@ -137,8 +176,7 @@ export default function ParticleEffect({ mode, audioAnalyser }) {
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed inset-0 z-10 pointer-events-none"
-      style={{ willChange: 'transform', transform: 'translateZ(0)' }}
+      className="absolute inset-0 z-10 pointer-events-none w-full h-full"
     />
   );
 }

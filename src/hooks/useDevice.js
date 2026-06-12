@@ -12,7 +12,8 @@ export function useDevice() {
       const isMobileAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       const isMobile = isMobileWidth || isMobileAgent;
       
-      const isLowEnd = (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) || false;
+      const isTV = /SmartTV|GoogleTV|AndroidTV|Opera TV|Projector|CrKey|AFTB|AFTN|Boxee|Kylo|Roku|DLNADOC|CE-HTML/i.test(navigator.userAgent);
+      const isLowEnd = (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) || isTV || false;
 
       setDevice({ isMobile, isLowEnd });
     };

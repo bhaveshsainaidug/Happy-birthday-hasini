@@ -7,6 +7,11 @@ export default function Scene1({ onComplete, startMusic }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const envelopeRef = useRef(null);
+  const onCompleteRef = useRef(onComplete);
+
+  React.useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   const handleMouseMove = (e) => {
     if (!envelopeRef.current || isOpen || isTransitioning) return;
@@ -88,33 +93,7 @@ export default function Scene1({ onComplete, startMusic }) {
   const handleAdvance = () => {
     if (isTransitioning) return;
     setIsTransitioning(true);
-
-    // Stardust vortex wipe transition out
-    const wipe = document.createElement('div');
-    Object.assign(wipe.style, {
-      position: 'fixed',
-      inset: '0',
-      backgroundColor: 'var(--charcoal)',
-      zIndex: '100',
-      pointerEvents: 'none',
-      clipPath: 'circle(0% at 50% 50%)',
-      willChange: 'clip-path'
-    });
-    document.body.appendChild(wipe);
-
-    gsap.to(wipe, {
-      clipPath: 'circle(150% at 50% 50%)',
-      duration: 1.5,
-      ease: "expo.inOut",
-      onComplete: () => {
-        onComplete();
-        gsap.to(wipe, {
-          opacity: 0,
-          duration: 0.8,
-          onComplete: () => wipe.remove()
-        });
-      }
-    });
+    onCompleteRef.current();
   };
 
   return (

@@ -18,7 +18,7 @@ const quotes = [
     avatar: "🦋"
   },
   {
-    author: "Your friend Deekshitha",
+    author: "Your friend Shruthi",
     role: "Source of positive vibes 🌸",
     text: "You are the absolute light of our squad. Your laughter is contagious, and you make even the most boring lectures feel like a party. Never lose that spark!",
     color: "var(--sage)",

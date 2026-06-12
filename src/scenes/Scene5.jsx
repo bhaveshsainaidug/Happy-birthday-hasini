@@ -1,13 +1,33 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { galleryPhotos } from '../content/content';
+import { useDevice } from '../hooks/useDevice';
 
 export default function Scene5({ onComplete, audioAnalyser }) {
   const containerRef = useRef(null);
   const cardRef = useRef(null);
   const canvasRef = useRef(null);
+  const onCompleteRef = useRef(onComplete);
 
-  const displayPhotos = galleryPhotos.slice(0, 8); // Display 8 memories
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  const { isMobile } = useDevice();
+  const [cardAspect, setCardAspect] = useState(1);
+
+  const displayPhotos = [...galleryPhotos].sort((a, b) => {
+    const filenameA = a.src.split('/').pop();
+    const filenameB = b.src.split('/').pop();
+    
+    const numA = parseInt(filenameA.match(/\d+/)?.[0] || '0', 10);
+    const numB = parseInt(filenameB.match(/\d+/)?.[0] || '0', 10);
+    
+    if (numA !== numB) {
+      return numA - numB;
+    }
+    return filenameA.localeCompare(filenameB);
+  });
   const totalPhotos = displayPhotos.length;
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -18,6 +38,15 @@ export default function Scene5({ onComplete, audioAnalyser }) {
   const sweepProgress = useRef(0);
   const particles = useRef([]);
   const [glowPulse, setGlowPulse] = useState(1);
+
+  // Load aspect ratio dynamically
+  useEffect(() => {
+    const img = new Image();
+    img.src = displayPhotos[currentIndex].src;
+    img.onload = () => {
+      setCardAspect(img.naturalWidth / img.naturalHeight);
+    };
+  }, [currentIndex, displayPhotos]);
 
   // Transition timer
   useEffect(() => {
@@ -30,21 +59,26 @@ export default function Scene5({ onComplete, audioAnalyser }) {
     return () => clearTimeout(timer);
   }, [currentIndex, isTransitioning]);
 
-  // Adjust canvas size
+  // Adjust canvas size automatically using ResizeObserver on its parent container
   useEffect(() => {
-    const handleResize = () => {
-      if (canvasRef.current && cardRef.current) {
-        const rect = cardRef.current.getBoundingClientRect();
-        canvasRef.current.width = rect.width;
-        canvasRef.current.height = rect.height;
-      }
-    };
+    if (!canvasRef.current) return;
     
-    // Slight delay to ensure DOM is settled
-    setTimeout(handleResize, 100);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [currentIndex]);
+    const parent = canvasRef.current.parentElement;
+    if (!parent) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const { width, height } = entry.contentRect;
+        if (canvasRef.current) {
+          canvasRef.current.width = width;
+          canvasRef.current.height = height;
+        }
+      }
+    });
+    
+    resizeObserver.observe(parent);
+    return () => resizeObserver.disconnect();
+  }, []);
 
   // Audio-reactive wiggles (subtle 2D scale and drop-shadow, no 3D blur)
   useEffect(() => {
@@ -154,11 +188,13 @@ export default function Scene5({ onComplete, audioAnalyser }) {
         onUpdate: () => {
           sweepProgress.current = sweepObj.val;
           
-          const activeContainer = cardRef.current.querySelector('.next-photo-container');
-          if (activeContainer) {
-            const percent = sweepObj.val * 100;
-            // Angled clip sweep
-            activeContainer.style.clipPath = `polygon(0 0, ${percent + 15}% 0, ${percent - 15}% 100%, 0 100%)`;
+          if (cardRef.current) {
+            const activeContainer = cardRef.current.querySelector('.next-photo-container');
+            if (activeContainer) {
+              const percent = sweepObj.val * 100;
+              // Angled clip sweep
+              activeContainer.style.clipPath = `polygon(0 0, ${percent + 15}% 0, ${percent - 15}% 100%, 0 100%)`;
+            }
           }
         },
         onComplete: () => {
@@ -169,9 +205,11 @@ export default function Scene5({ onComplete, audioAnalyser }) {
           sweepProgress.current = 0;
 
           // Reset clip path of overlay container
-          const activeContainer = cardRef.current.querySelector('.next-photo-container');
-          if (activeContainer) {
-            activeContainer.style.clipPath = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
+          if (cardRef.current) {
+            const activeContainer = cardRef.current.querySelector('.next-photo-container');
+            if (activeContainer) {
+              activeContainer.style.clipPath = 'polygon(0 0, 0 0, 0 100%, 0 100%)';
+            }
           }
         }
       }
@@ -179,35 +217,43 @@ export default function Scene5({ onComplete, audioAnalyser }) {
   };
 
   const handleAdvance = () => {
+    console.log("[Scene5] handleAdvance requested.");
     setIsTransitioning(true);
-
-    const wipe = document.createElement('div');
-    Object.assign(wipe.style, {
-      position: 'fixed',
-      inset: '0',
-      backgroundColor: 'var(--charcoal)',
-      zIndex: '100',
-      pointerEvents: 'none',
-      clipPath: 'polygon(0 0, 100% 0, 100% 0, 0 0)'
-    });
-    document.body.appendChild(wipe);
-
-    gsap.to(cardRef.current, { scale: 0.88, opacity: 0, duration: 1.0, ease: "power2.in" });
-
-    gsap.to(wipe, {
-      clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
-      duration: 1.3,
-      ease: "power3.inOut",
-      onComplete: () => {
-        onComplete();
-        gsap.to(wipe, {
-          opacity: 0,
-          duration: 0.8,
-          onComplete: () => wipe.remove()
-        });
-      }
-    });
+    if (cardRef.current) {
+      gsap.to(cardRef.current, { 
+        scale: 0.88, 
+        opacity: 0, 
+        duration: 0.5, 
+        ease: "power2.in",
+        onComplete: () => {
+          console.log("[Scene5] exit animation completed, calling onCompleteRef.current.");
+          onCompleteRef.current();
+        }
+      });
+    } else {
+      console.log("[Scene5] cardRef.current is missing, calling onCompleteRef.current immediately.");
+      onCompleteRef.current();
+    }
   };
+
+  const baseSizeMobile = 290;
+  const baseSizeDesktop = 390;
+  
+  let wMobile, hMobile, wDesktop, hDesktop;
+  
+  if (cardAspect > 1) { // Landscape
+    wMobile = baseSizeMobile;
+    hMobile = Math.round(baseSizeMobile / cardAspect);
+    wDesktop = baseSizeDesktop;
+    hDesktop = Math.round(baseSizeDesktop / cardAspect);
+  } else { // Portrait or Square
+    hMobile = baseSizeMobile;
+    wMobile = Math.round(baseSizeMobile * cardAspect);
+    hDesktop = baseSizeDesktop;
+    wDesktop = Math.round(baseSizeDesktop * cardAspect);
+  }
+
+  const sizes = { wMobile, hMobile, wDesktop, hDesktop };
 
   return (
     <div 
@@ -227,10 +273,13 @@ export default function Scene5({ onComplete, audioAnalyser }) {
       {/* Elegant Flat Square Polaroid Frame */}
       <div
         ref={cardRef}
-        className="relative w-[280px] h-[280px] md:w-[350px] md:h-[350px] bg-[#FAF7F0] rounded-3xl p-4 flex flex-col border border-white/20 select-none shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-75"
+        onClick={triggerSweep}
+        className="relative bg-[#FAF7F0] rounded-3xl p-4 flex flex-col border border-white/20 select-none shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-75 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
         style={{
           transform: `scale(${glowPulse})`,
-          boxShadow: `0 20px 50px rgba(0,0,0,0.5), 0 0 ${15 + (glowPulse-1)*150}px rgba(212,168,67,${0.15 + (glowPulse-1)*3})`
+          boxShadow: `0 20px 50px rgba(0,0,0,0.5), 0 0 ${15 + (glowPulse-1)*150}px rgba(212,168,67,${0.15 + (glowPulse-1)*3})`,
+          width: isMobile ? `${sizes.wMobile}px` : `${sizes.wDesktop}px`,
+          height: isMobile ? `${sizes.hMobile}px` : `${sizes.hDesktop}px`
         }}
       >
         {/* Tape sticker style overlay */}
@@ -245,6 +294,9 @@ export default function Scene5({ onComplete, audioAnalyser }) {
               src={displayPhotos[currentIndex].src} 
               alt="Memory Base" 
               className="w-full h-full object-cover object-center pointer-events-none"
+              style={{
+                imageRendering: 'auto'
+              }}
               draggable="false"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent mix-blend-overlay" />
@@ -254,14 +306,16 @@ export default function Scene5({ onComplete, audioAnalyser }) {
           <div 
             className="next-photo-container absolute inset-0 z-20 w-full h-full overflow-hidden"
             style={{
-              clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
-              willChange: 'clip-path'
+              clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)'
             }}
           >
             <img 
               src={displayPhotos[nextIndex].src} 
               alt="Memory Sweep" 
               className="w-full h-full object-cover object-center pointer-events-none"
+              style={{
+                imageRendering: 'auto'
+              }}
               draggable="false"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent mix-blend-overlay" />

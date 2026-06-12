@@ -13,6 +13,11 @@ export default function Scene2({ onComplete, audioAnalyser }) {
   const arrowRef = useRef(null);
   const progressRef = useRef(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   const nameLetters = "Hasini".split("");
   const letterColors = ['#FAF7F0', '#E8A598', '#D4A843', '#FAF7F0', '#9BAF88', '#E8A598'];
@@ -23,16 +28,15 @@ export default function Scene2({ onComplete, audioAnalyser }) {
   useEffect(() => {
     const tl = gsap.timeline();
 
-    // Reset elements
-    gsap.set(textRef.current, { text: "" });
-    gsap.set(arrowRef.current, { strokeDashoffset: 100, strokeDasharray: 100, opacity: 0 });
-    gsap.set(progressRef.current, { scaleX: 0, transformOrigin: 'left center' });
+    // Reset elements safely
+    if (textRef.current) gsap.set(textRef.current, { text: "" });
+    if (arrowRef.current) gsap.set(arrowRef.current, { strokeDashoffset: 100, strokeDasharray: 100, opacity: 0 });
+    if (progressRef.current) gsap.set(progressRef.current, { scaleX: 0, transformOrigin: 'left center' });
 
     // 1. Cinematic 3D Letter Assembly and Screen Shake
     gsap.set('.name-letter', { 
       opacity: 0,
-      transformPerspective: 1000,
-      willChange: 'transform, opacity'
+      transformPerspective: 1000
     });
 
     tl.fromTo('.name-letter', 
@@ -57,7 +61,6 @@ export default function Scene2({ onComplete, audioAnalyser }) {
         stagger: 0.12,
         ease: "elastic.out(1, 0.75)",
         onComplete: () => {
-          gsap.set('.name-letter', { willChange: 'auto' });
           
           // Screen Shake on assembly impact!
           gsap.timeline()
@@ -92,44 +95,52 @@ export default function Scene2({ onComplete, audioAnalyser }) {
     );
 
     // 2. Typewriter text
-    tl.to(textRef.current, {
-      text: "Today, the world is a little more wonderful.",
-      duration: 2.2,
-      ease: "none"
-    }, "-=0.2");
+    if (textRef.current) {
+      tl.to(textRef.current, {
+        text: "Today, the world is a little more wonderful.",
+        duration: 2.2,
+        ease: "none"
+      }, "-=0.2");
+    }
 
     // 3. Subtitle fade in
     tl.to('#subtitle-line', { opacity: 1, y: 0, duration: 1 }, "+=0.2");
 
     // 4. Cursor blink & fade
-    tl.to(cursorRef.current, {
-      opacity: 0,
-      duration: 0.1,
-      repeat: 5,
-      yoyo: true,
-      ease: "steps(1)"
-    });
-    tl.to(cursorRef.current, { opacity: 0, duration: 0.5 });
+    if (cursorRef.current) {
+      tl.to(cursorRef.current, {
+        opacity: 0,
+        duration: 0.1,
+        repeat: 5,
+        yoyo: true,
+        ease: "steps(1)"
+      });
+      tl.to(cursorRef.current, { opacity: 0, duration: 0.5 });
+    }
 
     // 5. Arrow animates in
-    tl.to(arrowRef.current, {
-      strokeDashoffset: 0,
-      opacity: 1,
-      duration: 1.2,
-      ease: "expo.out"
-    });
+    if (arrowRef.current) {
+      tl.to(arrowRef.current, {
+        strokeDashoffset: 0,
+        opacity: 1,
+        duration: 1.2,
+        ease: "expo.out"
+      });
+    }
 
     // 6. Progress bar fills
-    tl.to(progressRef.current, {
-      scaleX: 1,
-      duration: 5.5,
-      ease: "linear"
-    }, "-=1.2");
+    if (progressRef.current) {
+      tl.to(progressRef.current, {
+        scaleX: 1,
+        duration: 5.5,
+        ease: "linear"
+      }, "-=1.2");
+    }
 
     // 7. Auto advance
     tl.call(() => {
       handleAdvance();
-    }, null, "+=5.5");
+    }, null, "+=0.1");
 
     return () => {
       tl.kill();
@@ -194,34 +205,10 @@ export default function Scene2({ onComplete, audioAnalyser }) {
   };
 
   const handleAdvance = () => {
+    console.log("[Scene2] handleAdvance requested. isTransitioning:", isTransitioning);
     if (isTransitioning) return;
     setIsTransitioning(true);
-
-    const wipe = document.createElement('div');
-    Object.assign(wipe.style, {
-      position: 'fixed',
-      inset: '0',
-      backgroundColor: 'var(--charcoal)',
-      zIndex: '100',
-      pointerEvents: 'none',
-      clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
-      willChange: 'clip-path'
-    });
-    document.body.appendChild(wipe);
-
-    gsap.to(wipe, {
-      clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
-      duration: 1.5,
-      ease: "expo.inOut",
-      onComplete: () => {
-        onComplete();
-        gsap.to(wipe, {
-          opacity: 0,
-          duration: 0.8,
-          onComplete: () => wipe.remove()
-        });
-      }
-    });
+    onCompleteRef.current();
   };
 
   return (
@@ -324,7 +311,13 @@ export default function Scene2({ onComplete, audioAnalyser }) {
           Twenty years. A beautiful journey.
         </p>
 
-        <div className="mt-12 text-[var(--gold)] opacity-80 animate-bounce">
+        <button 
+          onClick={handleAdvance}
+          className="mt-12 text-[var(--gold)] opacity-80 animate-bounce cursor-pointer hover:scale-110 active:scale-95 transition-transform duration-200 z-30"
+          style={{ background: 'none', border: 'none', outline: 'none' }}
+          id="scene-2-next-btn"
+          aria-label="Next Scene"
+        >
           <svg width="40" height="100" viewBox="0 0 40 100" fill="none">
             <path 
               ref={arrowRef}
@@ -335,7 +328,7 @@ export default function Scene2({ onComplete, audioAnalyser }) {
               strokeLinejoin="round"
             />
           </svg>
-        </div>
+        </button>
       </div>
       
       {/* Glowing Neon Progress Bar */}
